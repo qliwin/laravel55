@@ -9,6 +9,7 @@
     <div class="container">
 
         <div class="col-md-offset-1 col-md-10">
+            @include('shared._messages')
             {{--占位区域 content 区块的内容--}}
             @yield('content')
             @include('layouts._footer')
