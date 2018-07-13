@@ -22,10 +22,10 @@ class SessionsController extends Controller
 			'password' =>'required'
     	]);
 
-    	if (Auth::attempt($credentials)) {
-           // 登录成功后的相关操作
-           session()->flash('success', '欢迎回来！');
-           return redirect()->route('users.show', [Auth::user()]);
+    	if (Auth::attempt($credentials, $request->has('remember'))) {
+            // 登录成功后的相关操作
+            session()->flash('success', '欢迎回来！');
+            return redirect()->route('users.show', [Auth::user()]);
        } else {
            // 登录失败后的相关操作
            session()->flash('danger', '很抱歉，您的邮箱和密码不匹配');
@@ -38,6 +38,8 @@ class SessionsController extends Controller
     //销毁会话（退出登录
     public function destroy()
     {
-
+        Auth::logout();
+        session()->flash('success', '您已成功退出！');
+        return redirect('login');
     }
 }
