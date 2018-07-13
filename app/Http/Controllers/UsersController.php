@@ -50,6 +50,13 @@ class UsersController extends Controller
     public function show(User $user)
     {
         //自动获取id=1的$user模型
+        //利用了 Laravel 的『隐性路由模型绑定』功能，直接读取对应 ID 的用户实例 $user，未找到则报错；
+        //将查找到的用户实例 $user 与编辑视图进行绑定；
         return view('users.show', compact('user'));
+    }
+    
+    public function edit(User $user)
+    {
+        return view('users.edit', compact('user'));
     }
 }
