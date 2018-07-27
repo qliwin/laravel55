@@ -8,6 +8,18 @@ use Auth;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        //中间件，除了except名单内的，都需要用户登录（黑名单），only白名单
+        $this->middleware('auth', [
+            'except'=>['show','create','store','index']
+        ]);
+
+        // $this->middleware('guest', [
+        //     'only' => ['create']
+        // ]);
+    }
+    
     /**
      * 注册页
      */
@@ -57,6 +69,47 @@ class UsersController extends Controller
     
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
         return view('users.edit', compact('user'));
+    }
+    
+    /**
+     * 更新用户资料
+     * @param  User    $user    [description]
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function update(User $user, Request $request)
+    {
+        $this->validate($request, [
+            'name'=>'required|max:50',
+            'password'=>'nullable|confirmed|min:1'
+        ]);
+        
+        //$user->update([
+        //    'name'=>$request->name,
+        //    'password'=>bcrypt($request->password)
+        //]);
+        
+        $this->authorize('update', $user);
+
+        $data = [];
+        $data['name'] = $request->name;
+        //密码不为空时，更新
+        if ($request->password) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        $user->update($data);
+        
+        session()->flash('success', '资料更新成功');
+        return redirect()->route('users.show', [$user]);
+    }
+
+    //用户列表
+    public function index()
+    {
+        $users = User::all();
+        return view('users.index', compact('users'));
     }
 }

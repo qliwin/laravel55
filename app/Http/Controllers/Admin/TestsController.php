@@ -8,6 +8,7 @@ class TestsController extends Controller
 {
     public function test()
     {
-        return 123;
+        $arr = [1,2,3];
+        p($arr);
     }
 }
