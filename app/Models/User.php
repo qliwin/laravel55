@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable; // Authenticatable 是授权相关功能的引用
 
 class User extends Authenticatable
 {
+    // 表名
+    protected $table = 'users';
+
+    // 消息通知相关功能引用
     use Notifiable;
 
     //白名单，除了这些其余提交的字段都不受理

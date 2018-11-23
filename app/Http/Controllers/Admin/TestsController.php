@@ -8,7 +8,6 @@ class TestsController extends Controller
 {
     public function test()
     {
-        $arr = [1,2,3];
-        p($arr);
+        echo getenv('APP_ENV');
     }
 }
