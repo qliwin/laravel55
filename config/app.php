@@ -178,6 +178,11 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /**
+         * 开发插件
+        */
+        Barryvdh\Debugbar\ServiceProvider::class,
+
     ],
 
     /*
