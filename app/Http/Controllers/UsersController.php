@@ -49,7 +49,7 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        dd(get_db_config());
+        // dd(get_db_config());
         //自动获取id=1的$user模型
         return view('users.show', compact('user'));
     }
