@@ -8,6 +8,19 @@ use Auth;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        // 除了except内的方法，其余都要auth认证
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store', 'index']
+        ]);
+
+        // 仅有游客可以访问注册页
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
     /**
      * 注册页
      */
@@ -52,5 +65,58 @@ class UsersController extends Controller
         // dd(get_db_config());
         //自动获取id=1的$user模型
         return view('users.show', compact('user'));
+    }
+
+    public function edit(User $user)
+    {
+        $this->authorize('update', $user);
+        return view('users.edit', compact('user'));
+    }
+
+    public function update(User $user, Request $request)
+    {
+        $this->authorize('update', $user);
+        $this->validate($request, [
+            'name' => 'required|max:50',
+            'password' => 'nullable|confirmed|min:1',
+        ]);
+
+        // $user->update([
+        //     'name' => request('name'),
+        //     'password' => bcrypt(request('password')),
+        // ]);
+
+        $data = [];
+        $data['name'] = $request->name;
+        if ($request->password) {
+            $data['password'] = bcrypt($request->password);
+        }
+        $user->update($data);
+
+
+        session()->flash('success', '个人资料更新成功！');
+        return redirect()->route('users.show', [$user]);
+    }
+
+    /**
+     * 用户列表
+     * @return [type] [description]
+     */
+    public function index()
+    {
+        $users = User::paginate(5);
+        return view('users.index', compact('users'));
+    }
+
+    /**
+     * 刪除用戶
+     * @return [type] [description]
+     */
+    public function destroy(User $user)
+    {
+        $this->authorize('destroy', $user);
+        $user->delete();
+        session()->flash('success', '成功刪除用戶！');
+        return back();
     }
 }
