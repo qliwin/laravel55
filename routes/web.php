@@ -47,4 +47,11 @@ Route::delete('/logout', 'SessionsController@destroy')->name('logout');
 
 Route::get('signup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');
 
-Route::get('/test', 'Admin\TestsController@test')->name('test');
+// 找回密码页面
+Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+// 发送邮件
+Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+// 重置页面
+Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+// 重置更新
+Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.update');
