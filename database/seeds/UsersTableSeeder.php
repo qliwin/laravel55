@@ -12,7 +12,15 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $users = factory(User::class)->times(2)->make();
+        $users = factory(User::class)->times(20)->make();
         User::insert($users->makeVisible(['password', 'remember_token'])->toArray());
+
+        $user = User::find(1);
+        $user->name = 'qli';
+        $user->email = 'qli@qq.com';
+        $user->password = bcrypt('1');
+        $user->is_admin = true;
+        $user->activated = true;
+        $user->save();
     }
 }

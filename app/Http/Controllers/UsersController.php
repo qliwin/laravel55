@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Auth;
+use Mail;
 
 class UsersController extends Controller
 {
@@ -12,7 +13,7 @@ class UsersController extends Controller
     {
         // 除了except内的方法，其余都要auth认证
         $this->middleware('auth', [
-            'except' => ['show', 'create', 'store', 'index']
+            'except' => ['show', 'create', 'store', 'index', 'confirmEmail']
         ]);
 
         // 仅有游客可以访问注册页
@@ -47,14 +48,34 @@ class UsersController extends Controller
             'email'=>$request->email,
             'password'=>bcrypt($request->password),//加密
         ]);
-        //注册完后自动登录
-        Auth::login($user);
-        //渲染
-        session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
-        //$user模型会自动获取主键id，所以等同于 redirect()->route('users.show', [$user->id]);
-        return redirect()->route('users.show', [$user]);
+
+        // //注册完后自动登录
+        // Auth::login($user);
+        // //渲染
+        // session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');   
+        // //$user模型会自动获取主键id，所以等同于 redirect()->route('users.show', [$user->id]);
+        // return redirect()->route('users.show', [$user]);
+
+        $this->sendEmailConfirmationTo($user);
+        session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
+        return redirect('/');
+
     }
     
+    protected function sendEmailConfirmationTo($user)
+    {
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $from = 'aufree@yousails.com';
+        $name = 'Aufree';
+        $to = $user->email;
+        $subject = "感谢注册 Sample 应用！请确认你的邮箱。";
+
+        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
+    }
+
     /**
      * 展示个人信息
      * @param User $user
@@ -118,5 +139,22 @@ class UsersController extends Controller
         $user->delete();
         session()->flash('success', '成功刪除用戶！');
         return back();
+    }
+
+    /**
+     * 邮件激活
+     * @return [type] [description]
+     */
+    public function confirmEmail($token)
+    {
+        $user = User::where('activation_token', $token)->firstOrFail();
+
+        $user->activation_token = null;
+        $user->activated = true;
+        $user->save();
+
+        Auth::login($user);
+        session()->flash('success', '恭喜你，激活成功！');
+        return redirect()->route('users.show', [$user]);
     }
 }
