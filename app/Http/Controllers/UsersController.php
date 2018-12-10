@@ -87,9 +87,9 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        // dd(get_db_config());
+        $statuses = $user->statuses()->orderBy('created_at', 'desc')->paginate(2);
         //自动获取id=1的$user模型
-        return view('users.show', compact('user'));
+        return view('users.show', compact('user', 'statuses'));
     }
 
     public function edit(User $user)
@@ -161,7 +161,6 @@ class UsersController extends Controller
         session()->flash('success', '恭喜你，激活成功！');
         return redirect()->route('users.show', [$user]);
     }
-
 
 
 }
