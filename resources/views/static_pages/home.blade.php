@@ -15,6 +15,12 @@
         <section class="user_info">
           @include('shared._user_info', ['user' => Auth::user()])
         </section>
+        
+        {{-- 社交的统计信息，如关注人数、粉丝数、微博发布数 --}}
+        <section class="stats">
+          @include('shared._stats', ['user' => Auth::user()])
+        </section>
+
       </aside>
     </div>
 @else

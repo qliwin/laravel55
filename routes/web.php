@@ -23,6 +23,11 @@
     PATCH 常用于数据更新
     DELETE 常用于数据删除
 */
+Route::get('/test', function(){
+
+    $average = collect([['foo' => 10], ['foo' => 10], ['foo' => 20], ['foo' => 40]])->avg('foo');
+    dd($average);
+});
 Route::get('/', 'StaticPagesController@home')->name('home');
 Route::get('/help', 'StaticPagesController@help')->name('help');
 Route::get('/about', 'StaticPagesController@about')->name('about');
@@ -58,3 +63,10 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 
 // 微博
 Route::resource('statuses', 'StatusesController', ['only' => ['store', 'destroy']]);
+// 用户的关注人列表
+Route::get('users/{user}/followings', 'UsersController@followings')->name('users.followings');
+// 显示用户的粉丝列表
+Route::get('users/{user}/followers', 'UsersController@followers')->name('users.followers');
+// 关注
+Route::post('users/followers/{user}', 'FollowersController@store')->name('followers.store');
+Route::delete('users/followers/{user}', 'FollowersController@destroy')->name('followers.destroy');
